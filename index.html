@@ -259,6 +259,21 @@ Con todo mi cariño.</p>
     }
     splash.style.display = 'none';
     arSystem.start();
+
+    let tries = 0;
+    const forcePlay = setInterval(() => {
+      tries++;
+      const video = scene.querySelector('video');
+      if (video) {
+        video.muted = true;
+        video.setAttribute('muted', '');
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.play().catch(() => {});
+        clearInterval(forcePlay);
+      }
+      if (tries > 40) clearInterval(forcePlay);
+    }, 250);
   });
 
   // ---------- 2. Eventos de tracking: cuando la tarjeta ES reconocida ----------
