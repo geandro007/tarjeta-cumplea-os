@@ -7,7 +7,7 @@
 
 <!-- A-Frame + MindAR (Image Tracking). CDN oficial, gratis, sin backend -->
 <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<script src="https://unpkg.com/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
 <style>
   :root{
@@ -133,7 +133,7 @@
   device-orientation-permission-ui="enabled: true"
 >
   <a-assets>
-    <a-asset-item id="roseModel" src="./rose.glb"></a-asset-item>
+    <a-asset-item id="roseModel" src="./torta-v1.glb"></a-asset-item>
   </a-assets>
 
   <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
@@ -202,7 +202,7 @@
     <button class="modal-close" onclick="closeModal('modalVideo')">✕</button>
     <h2>Un video para ti</h2>
     <video controls playsinline>
-      <source src="./video-dedicatoria.mp4" type="video/mp4">
+      <source src="./Video1.mp4" type="video/mp4">
     </video>
   </div>
 </div>
@@ -238,6 +238,7 @@ Con todo mi cariño.</p>
     onSceneReady();
   } else {
     scene.addEventListener('loaded', onSceneReady, { once: true });
+    setTimeout(onSceneReady, 4000);
   }
 
   startBtn.addEventListener('click', () => {
