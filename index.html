@@ -41,6 +41,7 @@
     background:var(--burdeos);color:#fff;border:none;border-radius:30px;
     padding:14px 34px;font-size:15px;letter-spacing:.5px;font-family:inherit;
   }
+  #startBtn:disabled{opacity:.5;}
   #splash small{margin-top:18px;color:#a17d7d;font-size:12px;}
 
   /* ---------- ESCENA AR ---------- */
@@ -224,23 +225,29 @@ Con todo mi cariño.</p>
   const scene  = document.getElementById('ar-scene');
   const scanHint = document.getElementById('scanHint');
 
-  function startAR(){
-    splash.style.display = 'none';
-    const arSystem = scene.systems['mindar-image'];
-    if (!arSystem) {
-      alert('La cámara todavía está cargando, intenta de nuevo en un segundo.');
-      splash.style.display = 'flex';
-      return;
-    }
-    arSystem.start(); // enciende cámara y arranca el tracking
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = true;
+  startBtn.textContent = 'Cargando...';
+
+  function onSceneReady(){
+    startBtn.disabled = false;
+    startBtn.textContent = 'Activar cámara';
   }
 
-  document.getElementById('startBtn').addEventListener('click', () => {
-    if (scene.hasLoaded) {
-      startAR();
-    } else {
-      scene.addEventListener('loaded', startAR, { once: true });
+  if (scene.hasLoaded) {
+    onSceneReady();
+  } else {
+    scene.addEventListener('loaded', onSceneReady, { once: true });
+  }
+
+  startBtn.addEventListener('click', () => {
+    const arSystem = scene.systems['mindar-image'];
+    if (!arSystem) {
+      alert('Algo no cargó bien. Recarga la página e intenta de nuevo.');
+      return;
     }
+    splash.style.display = 'none';
+    arSystem.start();
   });
 
   // ---------- 2. Eventos de tracking: cuando la tarjeta ES reconocida ----------
