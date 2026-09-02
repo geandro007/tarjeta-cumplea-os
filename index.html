@@ -132,7 +132,7 @@
   device-orientation-permission-ui="enabled: true"
 >
   <a-assets>
-    <a-asset-item id="roseModel" src="./torta-v1.glb"></a-asset-item>
+    <a-asset-item id="roseModel" src="./rose.glb"></a-asset-item>
   </a-assets>
 
   <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
@@ -158,13 +158,12 @@
     <!-- texto flotante sobre el modelo -->
     <a-text
       id="titleText"
-      value="Feliz cumpleRaños"
+      value="Feliz cumpleaños"
       align="center"
       color="#7A2E38"
       position="0 0.55 0"
       scale="0.001 0.001 0.001"
       width="1.6"
-      font="https://cdn.aframe.io/fonts/DejaVu-sans.fnt"
       animation__pop="property: scale; from: 0.001 0.001 0.001; to: 0.3 0.3 0.3; dur: 700; delay: 300; easing: easeOutBack; startEvents: modelReveal"
     ></a-text>
   </a-entity>
@@ -194,7 +193,6 @@
     <p style="font-size:14px;color:#7a5b5b;">Toca para ver todas nuestras fotos juntos.</p>
     <a class="action-btn" style="display:inline-flex;text-decoration:none;" target="_blank"
        href="https://photos.app.goo.gl/TU-ALBUM-AQUI">Abrir álbum completo →</a>
-        <source src="./foto1.jpg" type="image/jpg">
   </div>
 </div>
 
@@ -202,8 +200,8 @@
   <div class="modal-card">
     <button class="modal-close" onclick="closeModal('modalVideo')">✕</button>
     <h2>Un video para ti</h2>
-    <video controls playsinline poster="./video-poster.jpg">
-      <source src="./Video1.mp4" type="video/mp4">
+    <video controls playsinline>
+      <source src="./video-dedicatoria.mp4" type="video/mp4">
     </video>
   </div>
 </div>
@@ -226,10 +224,23 @@ Con todo mi cariño.</p>
   const scene  = document.getElementById('ar-scene');
   const scanHint = document.getElementById('scanHint');
 
-  document.getElementById('startBtn').addEventListener('click', () => {
+  function startAR(){
     splash.style.display = 'none';
     const arSystem = scene.systems['mindar-image'];
+    if (!arSystem) {
+      alert('La cámara todavía está cargando, intenta de nuevo en un segundo.');
+      splash.style.display = 'flex';
+      return;
+    }
     arSystem.start(); // enciende cámara y arranca el tracking
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    if (scene.hasLoaded) {
+      startAR();
+    } else {
+      scene.addEventListener('loaded', startAR, { once: true });
+    }
   });
 
   // ---------- 2. Eventos de tracking: cuando la tarjeta ES reconocida ----------
@@ -253,9 +264,9 @@ Con todo mi cariño.</p>
   // ---------- 4. RSVP por WhatsApp ----------
   // Reemplaza el número (código de país + número, sin + ni espacios)
   function sendRSVP(){
-    const numero = '59178943093';
+    const numero = '59171234567';
     const mensaje = encodeURIComponent(
-      '¡Hola! Acabo de ver la tarjeta 🎉'
+      '¡Hola! Confirmo que asistiré a tu cumpleaños el 01/09/2026 🎉'
     );
     window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
   }
