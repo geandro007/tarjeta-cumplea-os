@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Feliz cumpleaños — Invitación AR</title>
+
+<!-- A-Frame + MindAR (Image Tracking). CDN oficial, gratis, sin backend -->
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+<style>
+  :root{
+    --burdeos:#7A2E38;
+    --rosa:#F7E8E4;
+    --rosa-suave:#F3D8D2;
+    --dorado:#C9A24B;
+    --crema:#FFFBF7;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;overflow:hidden;font-family:'Georgia',serif;background:#111;}
+
+  /* ---------- PANTALLA DE INICIO (antes de escanear) ---------- */
+  #splash{
+    position:fixed;inset:0;z-index:50;
+    background:linear-gradient(180deg,var(--rosa) 0%,var(--rosa-suave) 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:32px;text-align:center;color:var(--burdeos);
+  }
+  #splash h1{font-size:28px;margin:0 0 8px;font-weight:400;letter-spacing:.5px;}
+  #splash p{font-size:15px;color:#8a5a5a;margin:0 0 28px;max-width:280px;line-height:1.5;}
+  #splash .icon-ring{
+    width:96px;height:96px;border-radius:50%;border:2px dashed var(--dorado);
+    display:flex;align-items:center;justify-content:center;margin-bottom:24px;
+    animation:spin 6s linear infinite;
+  }
+  #splash .icon-ring span{font-size:34px;transform:rotate(0deg);animation:counterspin 6s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes counterspin{to{transform:rotate(-360deg);}}
+  #startBtn{
+    background:var(--burdeos);color:#fff;border:none;border-radius:30px;
+    padding:14px 34px;font-size:15px;letter-spacing:.5px;font-family:inherit;
+  }
+  #splash small{margin-top:18px;color:#a17d7d;font-size:12px;}
+
+  /* ---------- ESCENA AR ---------- */
+  .arjs-loader{display:none;}
+  #ar-scene{position:fixed;inset:0;z-index:1;}
+
+  /* mensaje "buscando marcador" */
+  #scanHint{
+    position:fixed;top:24px;left:50%;transform:translateX(-50%);
+    background:rgba(122,46,56,.85);color:#fff;padding:8px 18px;border-radius:20px;
+    font-size:13px;z-index:20;transition:opacity .3s;
+  }
+
+  /* ---------- UI FLOTANTE SOBRE LA CÁMARA ---------- */
+  #ui-layer{
+    position:fixed;inset:0;z-index:10;pointer-events:none;
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:20px 16px calc(20px + env(safe-area-inset-bottom));
+  }
+  #ui-layer .top-row{display:flex;justify-content:flex-end;pointer-events:auto;}
+  #closeBtn{
+    background:rgba(0,0,0,.35);color:#fff;border:none;width:36px;height:36px;
+    border-radius:50%;font-size:16px;
+  }
+
+  .action-dock{
+    display:flex;gap:10px;justify-content:center;flex-wrap:wrap;pointer-events:auto;
+  }
+  .action-btn{
+    background:rgba(255,251,247,.92);color:var(--burdeos);border:1px solid var(--dorado);
+    border-radius:24px;padding:11px 16px;font-size:13px;font-family:inherit;
+    display:flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(0,0,0,.15);
+  }
+  .action-btn.rsvp{background:#25D366;color:#fff;border-color:#25D366;}
+
+  /* enlaces flotantes a la galería (aparecen orbitando cerca del target) */
+  .float-link{
+    position:absolute;pointer-events:auto;background:rgba(255,255,255,.9);
+    border:1px solid var(--dorado);border-radius:50%;width:46px;height:46px;
+    display:flex;align-items:center;justify-content:center;font-size:18px;
+    animation:float 3.5s ease-in-out infinite;opacity:0;transition:opacity .6s;
+  }
+  .float-link.show{opacity:1;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+  /* ---------- MODALES (foto, video, carta) ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:60;background:rgba(30,10,14,.85);
+    display:none;align-items:center;justify-content:center;padding:24px;
+  }
+  .modal.open{display:flex;}
+  .modal-card{
+    background:var(--crema);border-radius:16px;max-width:360px;width:100%;
+    max-height:80vh;overflow-y:auto;padding:22px;position:relative;color:#3a2a2a;
+  }
+  .modal-card h2{color:var(--burdeos);font-weight:400;font-size:19px;margin-top:0;}
+  .modal-close{
+    position:absolute;top:12px;right:12px;background:none;border:none;
+    font-size:20px;color:var(--burdeos);
+  }
+  .modal-card img,.modal-card video{width:100%;border-radius:10px;margin:8px 0;}
+  .letter-text{font-family:'Georgia',serif;font-size:15px;line-height:1.9;font-style:italic;white-space:pre-line;}
+</style>
+</head>
+<body>
+
+<!-- ============ 1. PANTALLA INICIAL ============ -->
+<div id="splash">
+  <div class="icon-ring"><span>💌</span></div>
+  <h1>Una sorpresa te espera</h1>
+  <p>Enfoca la tarjeta de tu invitación con la cámara para desbloquear una experiencia hecha para ti.</p>
+  <button id="startBtn">Activar cámara</button>
+  <small>Funciona directo en tu navegador, sin instalar nada</small>
+</div>
+
+<!-- ============ 2. ESCENA AR (MindAR + A-Frame) ============ -->
+<!--
+  IMPORTANTE:
+  - Reemplaza "targets.mind" por el archivo generado a partir de TU foto/tarjeta
+    (se genera gratis en https://hiukim.github.io/mind-ar-js-doc/tools/compile)
+  - Reemplaza "rose.glb" por tu modelo 3D (flor, corazón, portal, etc.)
+-->
+<a-scene
+  id="ar-scene"
+  mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: no; uiLoading: no;"
+  color-space="sRGB"
+  renderer="colorManagement: true, physicallyCorrectLights: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: true"
+>
+  <a-assets>
+    <a-asset-item id="roseModel" src="./torta-v1.glb"></a-asset-item>
+  </a-assets>
+
+  <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
+
+  <!-- target 0 = la imagen/tarjeta que compilaste en targets.mind -->
+  <a-entity mindar-image-target="targetIndex: 0">
+
+    <!-- ===== MODELO 3D: aparece con fade+scale y luego rota sin parar ===== -->
+    <a-entity
+      id="mainModel"
+      gltf-model="#roseModel"
+      scale="0 0 0"
+      position="0 0 0.1"
+      rotation="0 0 0"
+      animation__pop="property: scale; from: 0 0 0; to: 0.35 0.35 0.35; dur: 900; easing: easeOutElastic; startEvents: modelReveal"
+      animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 9000; easing: linear; startEvents: modelReveal"
+    ></a-entity>
+
+    <!-- luz suave y cálida para que el modelo se vea "romántico" -->
+    <a-entity light="type: ambient; intensity: 0.9; color: #FFE9E0"></a-entity>
+    <a-entity light="type: directional; intensity: 0.6; color: #FFD9C7" position="1 1 1"></a-entity>
+
+    <!-- texto flotante sobre el modelo -->
+    <a-text
+      id="titleText"
+      value="Feliz cumpleRaños"
+      align="center"
+      color="#7A2E38"
+      position="0 0.55 0"
+      scale="0.001 0.001 0.001"
+      width="1.6"
+      font="https://cdn.aframe.io/fonts/DejaVu-sans.fnt"
+      animation__pop="property: scale; from: 0.001 0.001 0.001; to: 0.3 0.3 0.3; dur: 700; delay: 300; easing: easeOutBack; startEvents: modelReveal"
+    ></a-text>
+  </a-entity>
+</a-scene>
+
+<p id="scanHint">Enfoca la tarjeta a 20–30 cm de distancia ✨</p>
+
+<!-- ============ 3. UI INTERACTIVA SOBRE LA CÁMARA ============ -->
+<div id="ui-layer">
+  <div class="top-row">
+    <button id="closeBtn" onclick="location.reload()">✕</button>
+  </div>
+
+  <div class="action-dock">
+    <button class="action-btn" onclick="openModal('modalPhotos')">📷 Fotos</button>
+    <button class="action-btn" onclick="openModal('modalVideo')">🎬 Video</button>
+    <button class="action-btn" onclick="openModal('modalLetter')">💌 Carta</button>
+    <button class="action-btn rsvp" onclick="sendRSVP()">✅ Confirmar (RSVP)</button>
+  </div>
+</div>
+
+<!-- ============ 4. MODALES ============ -->
+<div class="modal" id="modalPhotos">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('modalPhotos')">✕</button>
+    <h2>Nuestra galería</h2>
+    <p style="font-size:14px;color:#7a5b5b;">Toca para ver todas nuestras fotos juntos.</p>
+    <a class="action-btn" style="display:inline-flex;text-decoration:none;" target="_blank"
+       href="https://photos.app.goo.gl/TU-ALBUM-AQUI">Abrir álbum completo →</a>
+        <source src="./foto1.jpg" type="image/jpg">
+  </div>
+</div>
+
+<div class="modal" id="modalVideo">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('modalVideo')">✕</button>
+    <h2>Un video para ti</h2>
+    <video controls playsinline poster="./video-poster.jpg">
+      <source src="./Video1.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
+
+<div class="modal" id="modalLetter">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('modalLetter')">✕</button>
+    <h2>Para ti</h2>
+    <p class="letter-text">Un feliz cumpleaños, pásalo muy bien.
+
+Que este nuevo año te traiga tantas sonrisas como las que tú me regalas cada día.
+
+Con todo mi cariño.</p>
+  </div>
+</div>
+
+<script>
+  // ---------- 1. Iniciar cámara solo cuando el usuario lo permite ----------
+  const splash = document.getElementById('splash');
+  const scene  = document.getElementById('ar-scene');
+  const scanHint = document.getElementById('scanHint');
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    splash.style.display = 'none';
+    const arSystem = scene.systems['mindar-image'];
+    arSystem.start(); // enciende cámara y arranca el tracking
+  });
+
+  // ---------- 2. Eventos de tracking: cuando la tarjeta ES reconocida ----------
+  const target = document.querySelector('[mindar-image-target]');
+
+  target.addEventListener('targetFound', () => {
+    scanHint.style.opacity = '0';
+    document.getElementById('mainModel').emit('modelReveal');
+    document.getElementById('titleText').emit('modelReveal');
+    showFloatLinks();
+  });
+
+  target.addEventListener('targetLost', () => {
+    scanHint.style.opacity = '1';
+  });
+
+  // ---------- 3. Modales ----------
+  function openModal(id){ document.getElementById(id).classList.add('open'); }
+  function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+  // ---------- 4. RSVP por WhatsApp ----------
+  // Reemplaza el número (código de país + número, sin + ni espacios)
+  function sendRSVP(){
+    const numero = '59178943093';
+    const mensaje = encodeURIComponent(
+      '¡Hola! Acabo de ver la tarjeta 🎉'
+    );
+    window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
+  }
+
+  // ---------- 5. Enlaces flotantes a la galería (aparecen al detectar el marcador) ----------
+  function showFloatLinks(){
+    document.querySelectorAll('.float-link').forEach(el => el.classList.add('show'));
+  }
+</script>
+
+</body>
+</html>
