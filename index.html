@@ -47,7 +47,7 @@
   /* ---------- ESCENA AR ---------- */
   .arjs-loader{display:none;}
   #ar-scene{position:fixed;inset:0;z-index:1;}
-  video{
+  body > video{
     position:fixed !important;top:0 !important;left:0 !important;
     width:100% !important;height:100% !important;
     object-fit:cover !important;z-index:0 !important;
@@ -282,6 +282,9 @@ Con todo mi cariño.</p>
 </div>
 
 <script>
+  const mariachiVideoEl = document.getElementById('mariachiVideo');
+  if (mariachiVideoEl) { mariachiVideoEl.style.cssText = 'display:none !important;'; }
+
   // ---------- 1. Iniciar cámara solo cuando el usuario lo permite ----------
   const splash = document.getElementById('splash');
   const scene  = document.getElementById('ar-scene');
