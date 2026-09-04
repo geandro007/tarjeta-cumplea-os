@@ -154,6 +154,7 @@
     <img id="foto4" src="./foto4.jpg" crossorigin="anonymous">
     <img id="foto5" src="./foto5.jpg" crossorigin="anonymous">
     <img id="foto6" src="./foto6.jpg" crossorigin="anonymous">
+    <audio id="bgMusic" src="./musica.mp3" loop preload="auto"></audio>
   </a-assets>
 
   <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
@@ -217,7 +218,7 @@
       animation__pop="property: scale; from: 0 0 0; to: 1 1 1; dur: 700; delay: 550; easing: easeOutBack; startEvents: modelReveal"
     ></a-video>
 
-    <!-- ruleta de fotos girando encima de la torta -->
+    <!-- ruleta de fotos girando encima de la torta, estilo polaroid -->
     <a-entity
       id="photoRing"
       position="0 0.95 0.03"
@@ -225,12 +226,44 @@
       animation__pop="property: scale; from: 0 0 0; to: 1 1 1; dur: 700; delay: 600; easing: easeOutBack; startEvents: modelReveal"
       animation__ringspin="property: rotation; to: 0 0 360; loop: true; dur: 16000; easing: linear; startEvents: modelReveal"
     >
-      <a-image src="#foto1" position="0 0.32 0" width="0.26" height="0.26" material="shader:flat"></a-image>
-      <a-image src="#foto2" position="0.277 0.16 0" width="0.26" height="0.26" material="shader:flat"></a-image>
-      <a-image src="#foto3" position="0.277 -0.16 0" width="0.26" height="0.26" material="shader:flat"></a-image>
-      <a-image src="#foto4" position="0 -0.32 0" width="0.26" height="0.26" material="shader:flat"></a-image>
-      <a-image src="#foto5" position="-0.277 -0.16 0" width="0.26" height="0.26" material="shader:flat"></a-image>
-      <a-image src="#foto6" position="-0.277 0.16 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      <a-entity position="0 0.32 0" rotation="0 0 -4">
+        <a-plane color="#FFFFFF" width="0.30" height="0.34" position="0 -0.01 -0.005"></a-plane>
+        <a-image src="#foto1" position="0 0.015 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      </a-entity>
+      <a-entity position="0.277 0.16 0" rotation="0 0 3">
+        <a-plane color="#FFFFFF" width="0.30" height="0.34" position="0 -0.01 -0.005"></a-plane>
+        <a-image src="#foto2" position="0 0.015 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      </a-entity>
+      <a-entity position="0.277 -0.16 0" rotation="0 0 -3">
+        <a-plane color="#FFFFFF" width="0.30" height="0.34" position="0 -0.01 -0.005"></a-plane>
+        <a-image src="#foto3" position="0 0.015 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      </a-entity>
+      <a-entity position="0 -0.32 0" rotation="0 0 4">
+        <a-plane color="#FFFFFF" width="0.30" height="0.34" position="0 -0.01 -0.005"></a-plane>
+        <a-image src="#foto4" position="0 0.015 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      </a-entity>
+      <a-entity position="-0.277 -0.16 0" rotation="0 0 -5">
+        <a-plane color="#FFFFFF" width="0.30" height="0.34" position="0 -0.01 -0.005"></a-plane>
+        <a-image src="#foto5" position="0 0.015 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      </a-entity>
+      <a-entity position="-0.277 0.16 0" rotation="0 0 5">
+        <a-plane color="#FFFFFF" width="0.30" height="0.34" position="0 -0.01 -0.005"></a-plane>
+        <a-image src="#foto6" position="0 0.015 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      </a-entity>
+    </a-entity>
+
+    <!-- globos decorativos flotando a los costados -->
+    <a-entity position="-0.55 0.25 -0.1" scale="0 0 0" animation__pop="property: scale; from: 0 0 0; to: 1 1 1; dur: 600; delay: 650; easing: easeOutBack; startEvents: modelReveal" animation__float="property: position; dir: alternate; loop: true; dur: 2200; easing: easeInOutSine; to: -0.55 0.35 -0.1">
+      <a-sphere radius="0.09" color="#E85D75"></a-sphere>
+      <a-cylinder radius="0.002" height="0.3" position="0 -0.18 0" color="#6B2737"></a-cylinder>
+    </a-entity>
+    <a-entity position="-0.42 0.15 -0.05" scale="0 0 0" animation__pop="property: scale; from: 0 0 0; to: 1 1 1; dur: 600; delay: 720; easing: easeOutBack; startEvents: modelReveal" animation__float="property: position; dir: alternate; loop: true; dur: 1900; easing: easeInOutSine; to: -0.42 0.27 -0.05">
+      <a-sphere radius="0.075" color="#5EA8C9"></a-sphere>
+      <a-cylinder radius="0.002" height="0.26" position="0 -0.16 0" color="#6B2737"></a-cylinder>
+    </a-entity>
+    <a-entity position="-0.65 0.05 -0.15" scale="0 0 0" animation__pop="property: scale; from: 0 0 0; to: 1 1 1; dur: 600; delay: 780; easing: easeOutBack; startEvents: modelReveal" animation__float="property: position; dir: alternate; loop: true; dur: 2500; easing: easeInOutSine; to: -0.65 0.16 -0.15">
+      <a-sphere radius="0.07" color="#B87FD9"></a-sphere>
+      <a-cylinder radius="0.002" height="0.24" position="0 -0.15 0" color="#6B2737"></a-cylinder>
     </a-entity>
   </a-entity>
 </a-scene>
@@ -244,6 +277,7 @@
   </div>
 
   <div class="action-dock">
+    <button class="action-btn" id="musicBtn" onclick="toggleMusic()">🎵 Música</button>
     <button class="action-btn" onclick="openModal('modalPhotos')">📷 Fotos</button>
     <button class="action-btn" onclick="openModal('modalVideo')">🎺 Mariachis</button>
     <button class="action-btn" onclick="openModal('modalLetter')">💌 Carta</button>
@@ -318,6 +352,14 @@ Con todo mi cariño.</p>
     splash.style.display = 'none';
     arSystem.start();
 
+    const bgMusic = document.getElementById('bgMusic');
+    if (bgMusic) {
+      bgMusic.volume = 0.5;
+      bgMusic.play().catch(() => {
+        // si el navegador la bloquea, queda lista para sonar con el botón de música
+      });
+    }
+
     let tries = 0;
     const forcePlay = setInterval(() => {
       tries++;
@@ -354,6 +396,19 @@ Con todo mi cariño.</p>
 
   // ---------- 4. RSVP por WhatsApp ----------
   // Reemplaza el número (código de país + número, sin + ni espacios)
+  // ---------- Música de fondo (botón manual) ----------
+  function toggleMusic(){
+    const bgMusic = document.getElementById('bgMusic');
+    const btn = document.getElementById('musicBtn');
+    if (bgMusic.paused) {
+      bgMusic.play().catch(() => {});
+      btn.textContent = '🔇 Pausar';
+    } else {
+      bgMusic.pause();
+      btn.textContent = '🎵 Música';
+    }
+  }
+
   function sendRSVP(){
     const numero = '59171234567';
     const mensaje = encodeURIComponent(
