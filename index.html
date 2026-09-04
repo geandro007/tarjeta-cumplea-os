@@ -318,7 +318,7 @@ Con todo mi cariño.</p>
     let tries = 0;
     const forcePlay = setInterval(() => {
       tries++;
-      const video = document.querySelector('video');
+      const video = document.querySelector('video:not(#mariachiVideo)');
       if (video) {
         video.muted = true;
         video.setAttribute('muted', '');
