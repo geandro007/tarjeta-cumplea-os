@@ -143,7 +143,14 @@
   device-orientation-permission-ui="enabled: true"
 >
   <a-assets>
-    <a-asset-item id="roseModel" src="./torta-v1.glb"></a-asset-item>
+    <a-asset-item id="roseModel" src="./torta-cumple.glb"></a-asset-item>
+    <video id="mariachiVideo" src="./mariachis.mp4" muted loop autoplay playsinline crossorigin="anonymous"></video>
+    <img id="foto1" src="./foto1.jpg" crossorigin="anonymous">
+    <img id="foto2" src="./foto2.jpg" crossorigin="anonymous">
+    <img id="foto3" src="./foto3.jpg" crossorigin="anonymous">
+    <img id="foto4" src="./foto4.jpg" crossorigin="anonymous">
+    <img id="foto5" src="./foto5.jpg" crossorigin="anonymous">
+    <img id="foto6" src="./foto6.jpg" crossorigin="anonymous">
   </a-assets>
 
   <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
@@ -156,27 +163,72 @@
       id="mainModel"
       gltf-model="#roseModel"
       scale="0 0 0"
-      position="0 0 0.1"
+      position="0 -0.05 0.1"
       rotation="0 0 0"
-      animation__pop="property: scale; from: 0 0 0; to: 0.35 0.35 0.35; dur: 900; easing: easeOutElastic; startEvents: modelReveal"
+      animation__pop="property: scale; from: 0 0 0; to: 0.3 0.3 0.3; dur: 900; easing: easeOutElastic; startEvents: modelReveal"
       animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 9000; easing: linear; startEvents: modelReveal"
     ></a-entity>
 
-    <!-- luz suave y cálida para que el modelo se vea "romántico" -->
     <a-entity light="type: ambient; intensity: 0.9; color: #FFE9E0"></a-entity>
     <a-entity light="type: directional; intensity: 0.6; color: #FFD9C7" position="1 1 1"></a-entity>
 
-    <!-- texto flotante sobre el modelo -->
+    <!-- texto arriba de la torta -->
     <a-text
       id="titleText"
-      value="Feliz cumpleaños"
+      value="FELIZ CUMPLEANOS"
       align="center"
-      color="#7A2E38"
+      color="#6B2737"
       position="0 0.55 0"
       scale="0.001 0.001 0.001"
-      width="1.6"
-      animation__pop="property: scale; from: 0.001 0.001 0.001; to: 0.3 0.3 0.3; dur: 700; delay: 300; easing: easeOutBack; startEvents: modelReveal"
+      width="1.8"
+      animation__pop="property: scale; from: 0.001 0.001 0.001; to: 0.28 0.28 0.28; dur: 700; delay: 300; easing: easeOutBack; startEvents: modelReveal"
     ></a-text>
+
+    <!-- texto debajo de la torta -->
+    <a-text
+      id="subText"
+      value="Gean & Laura"
+      align="center"
+      color="#B8935A"
+      position="0 -0.42 0"
+      scale="0.001 0.001 0.001"
+      width="1.4"
+      animation__pop="property: scale; from: 0.001 0.001 0.001; to: 0.22 0.22 0.22; dur: 700; delay: 450; easing: easeOutBack; startEvents: modelReveal"
+    ></a-text>
+
+    <!-- pantalla de video con los mariachis, a un costado de la torta -->
+    <a-plane
+      color="#4A1B27"
+      width="0.56" height="0.38"
+      position="0.62 0.05 -0.02"
+      rotation="0 -18 0"
+      scale="0 0 0"
+      animation__pop="property: scale; from: 0 0 0; to: 1 1 1; dur: 700; delay: 500; easing: easeOutBack; startEvents: modelReveal"
+    ></a-plane>
+    <a-video
+      src="#mariachiVideo"
+      width="0.5" height="0.32"
+      position="0.62 0.05 0"
+      rotation="0 -18 0"
+      scale="0 0 0"
+      animation__pop="property: scale; from: 0 0 0; to: 1 1 1; dur: 700; delay: 550; easing: easeOutBack; startEvents: modelReveal"
+    ></a-video>
+
+    <!-- ruleta de fotos girando encima de la torta -->
+    <a-entity
+      id="photoRing"
+      position="0 0.95 0.03"
+      scale="0 0 0"
+      animation__pop="property: scale; from: 0 0 0; to: 1 1 1; dur: 700; delay: 600; easing: easeOutBack; startEvents: modelReveal"
+      animation__ringspin="property: rotation; to: 0 0 360; loop: true; dur: 16000; easing: linear; startEvents: modelReveal"
+    >
+      <a-image src="#foto1" position="0 0.32 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      <a-image src="#foto2" position="0.277 0.16 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      <a-image src="#foto3" position="0.277 -0.16 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      <a-image src="#foto4" position="0 -0.32 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      <a-image src="#foto5" position="-0.277 -0.16 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+      <a-image src="#foto6" position="-0.277 0.16 0" width="0.26" height="0.26" material="shader:flat"></a-image>
+    </a-entity>
   </a-entity>
 </a-scene>
 
@@ -190,7 +242,7 @@
 
   <div class="action-dock">
     <button class="action-btn" onclick="openModal('modalPhotos')">📷 Fotos</button>
-    <button class="action-btn" onclick="openModal('modalVideo')">🎬 Video</button>
+    <button class="action-btn" onclick="openModal('modalVideo')">🎺 Mariachis</button>
     <button class="action-btn" onclick="openModal('modalLetter')">💌 Carta</button>
     <button class="action-btn rsvp" onclick="sendRSVP()">✅ Confirmar (RSVP)</button>
   </div>
@@ -212,7 +264,7 @@
     <button class="modal-close" onclick="closeModal('modalVideo')">✕</button>
     <h2>Un video para ti</h2>
     <video controls playsinline>
-      <source src="./Video1.mp4" type="video/mp4">
+      <source src="./mariachis.mp4" type="video/mp4">
     </video>
   </div>
 </div>
