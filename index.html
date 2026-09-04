@@ -57,6 +57,9 @@
     width:100% !important;height:100% !important;
     z-index:1 !important;background:transparent !important;
   }
+  /* Ocultamos la interfaz propia de MindAR por CSS en vez de desactivarla por atributo
+     (desactivarla por atributo causa un error interno en esta versión de la librería) */
+  .mindar-ui-overlay{ display:none !important; }
 
   /* mensaje "buscando marcador" */
   #scanHint{
@@ -136,7 +139,7 @@
 -->
 <a-scene
   id="ar-scene"
-  mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: no; uiLoading: no;"
+  mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;"
   color-space="sRGB"
   renderer="colorManagement: true, physicallyCorrectLights: true"
   vr-mode-ui="enabled: false"
